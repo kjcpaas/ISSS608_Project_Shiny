@@ -113,7 +113,7 @@ STYLES = list(
   #svg_width = 6,
   #svg_height = 6 * 0.618
   svg_width = 6,
-  svg_height = 6 * 0.7
+  svg_height = 6 * 0.55
 )
 
 COMMON_THEME = theme(
@@ -126,9 +126,9 @@ COMMON_THEME = theme(
   plot.margin = margin(2, 0, 0, 0, unit = "pt"),
   
   # Legend styles
-  legend.position = "bottom",
+  legend.position = "right",
   legend.location = "plot",
-  legend.justification = "left",
+  legend.justification = "top",
   legend.direction = "vertical",
   legend.title = element_markdown(
     color = STYLES$title_color,

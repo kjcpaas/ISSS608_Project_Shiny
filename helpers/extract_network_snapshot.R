@@ -4,7 +4,7 @@ extract_network_snapshot <- function(graph, datestring, delete = FALSE) {
   graph_nodes = as_data_frame(graph, what = "vertices")
   graph_edges = as_data_frame(graph, what = "edges")
   
-  if(length(date) == 0) {
+  if(is.na(date)) {
     return(
       tbl_graph(nodes = graph_nodes %>% mutate(included = 1),
                 edges = graph_edges %>% mutate(included = 1),

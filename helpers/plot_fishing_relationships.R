@@ -100,9 +100,8 @@ plot_fishing_relationships <- function(graph,
           color = NA
         ),
         order = 2,
-        nrow = 2
       ),
-      edge_color = guide_legend(order = 3, nrow = 2),
+      edge_color = guide_legend(order = 3),
     ) +
     
     # Style graph
