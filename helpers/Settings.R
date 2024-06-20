@@ -38,7 +38,7 @@ STYLES = list(
     "padding:4px;text-align:center;"
   ),
   svg_width = 6,
-  svg_height = 6 * 0.618
+  svg_height = 6
 )
 
 MAPPINGS = list(
@@ -59,6 +59,7 @@ MAPPINGS = list(
     "NGO" = "#CC6677",
     "NewsCompany" = "#882255"
   ),
+  
   edge_relationship_subtype_to_color = c(
     "WorksFor" = "#D81B60",
     "Shareholdership" = "#FFC107",
@@ -100,16 +101,19 @@ STYLES = list(
   node_label_size = 2,
   node_label_dark = "black",
   node_label_light = "white",
+  instruction_size = 2.3,
   
-  default_caption = "Hover on the nodes to see more details.",
+  default_instruction = "*Hover on the nodes to see more details.",
   # Interactive elemnents
   tooltip_css = paste0(
     "background-color:black;color:white;",
     "font-family:Roboto Condensed;font-size:10pt;",
     "padding:4px;text-align:center;"
   ),
+  #svg_width = 6,
+  #svg_height = 6 * 0.618
   svg_width = 6,
-  svg_height = 6 * 0.618
+  svg_height = 6 * 0.7
 )
 
 COMMON_THEME = theme(
@@ -119,14 +123,13 @@ COMMON_THEME = theme(
     face = "bold",
     size = unit(10, "pt")
   ),
-  plot.subtitle = element_markdown(size = unit(8, "pt")),
-  plot.caption = element_markdown(size = unit(6, "pt"), hjust = 0),
   plot.margin = margin(2, 0, 0, 0, unit = "pt"),
   
   # Legend styles
-  legend.position = "right",
+  legend.position = "bottom",
   legend.location = "plot",
-  legend.justification = "top",
+  legend.justification = "left",
+  legend.direction = "vertical",
   legend.title = element_markdown(
     color = STYLES$title_color,
     face = "bold",
@@ -134,7 +137,7 @@ COMMON_THEME = theme(
   ),
   legend.text = element_text(size = unit(6, "pt"), vjust = 0.5),
   legend.box.spacing = unit(4, "pt"),
-  legend.margin = margin(0),
+  legend.margin = margin(r = 6),
   legend.spacing.x = unit(2, "pt"),
   legend.spacing.y = unit(8, "pt"),
   legend.key.size = unit(12, "pt"),

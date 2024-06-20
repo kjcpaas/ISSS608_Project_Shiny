@@ -19,15 +19,20 @@ tabPanel(
                   max = 10,
                   value = 3),
       checkboxInput("showFullNetwork", "Show full network (may take long to render)", value = FALSE, width = NULL),
-      checkboxInput("filterByDate", "Filter by Date", value = FALSE, width = NULL),
+      disabled(checkboxInput("filterByDate", "Filter by Date", value = FALSE, width = NULL)),
       dateInput("snapshotDate", "Select date", value = "2035-05-25")
     ),
     mainPanel(
       width = 9,
-      splitLayout(
-        cellWidths = c("60%", "40%"),
-        girafeOutput('relationshipGraph'),
-        DTOutput('nodesList')
+      fluidRow(
+        column(
+          width = 7,
+          girafeOutput('relationshipGraph')
+        ),
+        column(
+          width = 5,
+          DTOutput('nodesList')
+        )
       ),
       DTOutput('edgesList')
     )

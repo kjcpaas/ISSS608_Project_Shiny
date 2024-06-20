@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyjs)
 library(shinythemes)
 library(tidyverse)
 library(tidygraph)
@@ -10,6 +11,7 @@ library(patchwork)
 library(DT)
 
 source("helpers/extract_subnetwork.R", local = TRUE)$value
+source("helpers/extract_network_snapshot.R", local = TRUE)$value
 source("helpers/plot_fishing_relationships.R", local = TRUE)$value
 source("helpers/Settings.R", local = TRUE)$value
 page_relationship_graph <- source("pages/relationship_graph.R", local = TRUE)$value
@@ -34,13 +36,22 @@ server <- function(input, output, session) {
     toggleState(id = "distance", condition = !input$showFullNetwork)
   })
   
+  observeEvent(input$filterByDate, {
+    toggleState(id = "snapshotDate", condition = input$filterByDate)
+  })
+  
+  observeEvent(input$refNodeSelection_row_last_clicked, {
+    toggleState(id = "filterByDate", condition = !is.null(input$refNodeSelection_row_last_clicked))
+  })
+  
   output$refNodeSelection <- renderDT(
     output_refNodeSelection(input),
     selection = 'single',
     extensions = 'Scroller',
+    rownames = FALSE,
     colnames = rep("", ncol(output_refNodeSelection(input))),
     options = list(
-      pageLength = 10,
+      dom = "ft",
       deferRender = TRUE,
       scrollY = 200,
       scroller = TRUE,
@@ -61,17 +72,26 @@ server <- function(input, output, session) {
     }
   })
   
+  snapshotDate <- reactive({
+    if(input$filterByDate) {
+      input$snapshotDate
+    } else {
+      NULL
+    }
+  })
+  
   graph <- reactive({
     supernetwork %>%
-      extract_subnetwork(node_name=refNode(), distance = distance())
+      extract_subnetwork(node_name=refNode(), distance = distance()) %>%
+      extract_network_snapshot(snapshotDate())
   })
   
   nodes <- reactive({
-    n <- as_data_frame(graph(), what = 'vertices')
+    n <- as_data_frame(graph(), what = 'vertices') %>% filter(included == TRUE)
     rownames(n) <- NULL
     
     if(nrow(n) > 0) {
-      n %>% arrange(name) %>% select(name, alias, subtype)
+      n %>% arrange(name) %>% select(name, subtype)
     } else {
       NULL
     }
@@ -80,6 +100,7 @@ server <- function(input, output, session) {
   edges <- reactive({
     if(vcount(graph()) > 0) {
       as_data_frame(graph(), what = 'edges') %>%
+        filter(included == TRUE) %>%
         select(from, to, subtype, start_date, end_date)
     } else {
       NULL
@@ -93,8 +114,37 @@ server <- function(input, output, session) {
       )
   })
   
-  output$nodesList <- renderDT(nodes())
-  output$edgesList <- renderDT(edges(), selection = "none")
+  output$nodesList <- renderDT(
+    nodes(),
+    rownames = TRUE,
+    extensions = 'Scroller',
+    options = list(
+      dom = "ift",
+      deferRender = TRUE,
+      scrollY = 300,
+      scroller = TRUE,
+      language = list(
+        search = '',
+        searchPlaceholder = 'Search'
+      )
+    )
+  )
+  output$edgesList <- renderDT(
+    edges(),
+    selection = "none",
+    rownames = FALSE,
+    extensions = 'Scroller',
+    options = list(
+      dom = "ift",
+      deferRender = TRUE,
+      scrollY = 300,
+      scroller = TRUE,
+      language = list(
+        search = '',
+        searchPlaceholder = 'Search'
+      )
+    )
+  )
 }
 
 shinyApp(ui = ui, server = server)

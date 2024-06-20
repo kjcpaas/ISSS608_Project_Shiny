@@ -1,15 +1,13 @@
 plot_fishing_relationships <- function(graph,
                                        # Name of nodes to emphasize
                                        emphasize_nodes = c(),
-                                       # Date where to get the snapshot
-                                       datestring = NULL,
                                        # Layout options
                                        layout = "nicely",
                                        circular = FALSE,
                                        # Texts
                                        title = NULL,
                                        subtitle = NULL,
-                                       caption = STYLES$default_caption,
+                                       instruction = STYLES$default_instruction,
                                        # Plot styling
                                        node_size = STYLES$node_size,
                                        arrow_margin = STYLES$arrow_margin,
@@ -21,11 +19,14 @@ plot_fishing_relationships <- function(graph,
     return(NULL)
   }
   
-  date <- NULL
-  if(!is.null(datestring)) { date <- as_date(datestring) }
   nodes <- as_data_frame(graph, what = "vertices")
   
   g <- ggraph(graph, layout = layout, circular = circular) +
+    annotate("label", label=instruction,
+      x=-Inf, y=-Inf, hjust=0, vjust=0,
+      color = STYLES$muted_color,
+      family = STYLES$font_family, size = STYLES$instruction_size, fontface = "italic"
+    ) +
     # Render nodes
     geom_point_interactive(
       aes(
@@ -38,6 +39,7 @@ plot_fishing_relationships <- function(graph,
         # See scale_shape_manual code below
         shape = supertype,
       ),
+      alpha = nodes$included,
       size = node_size,
       # Thicken border if emphasized
       color = ifelse(
@@ -57,21 +59,14 @@ plot_fishing_relationships <- function(graph,
       size = STYLES$node_label_size,
       color = STYLES$node_label_light,
       fontface = ifelse(nodes$name %in% emphasize_nodes, "bold", "plain"),
+      alpha = nodes$included,
     ) +
     
     # Render edges. Use geom_edge fan so edges along the same path don't overlap
     geom_edge_fan(
       aes(
         color = subtype,
-        # Will identify if the edge is active at this date, if not do not display
-        # Ideally this should be in a function but I can't figure out how to make it work inside aes
-        # Logic is same as is extract_network_snapshot.R
-        filter = ifelse(is.null(date) | is.na(start_date), TRUE,
-          ifelse(start_date <= date & (is.na(end_date) | end_date > date),
-                 TRUE,
-                 FALSE
-                 )
-        )
+        filter = ifelse(included == 1, TRUE, FALSE)
       ),
       strength = 0.5,
       arrow = STYLES$arrow_style,
@@ -104,9 +99,10 @@ plot_fishing_relationships <- function(graph,
           shape = 22,
           color = NA
         ),
-        order = 2
+        order = 2,
+        nrow = 2
       ),
-      edge_color = guide_legend(order = 3),
+      edge_color = guide_legend(order = 3, nrow = 2),
     ) +
     
     # Style graph
@@ -115,8 +111,7 @@ plot_fishing_relationships <- function(graph,
                 plot_margin = margin(0)) +
     
     plot_annotation(title = title,
-                    subtitle = subtitle,
-                    caption = caption) &
+                    subtitle = subtitle) &
     COMMON_THEME
   
   g <- girafe(
@@ -126,5 +121,6 @@ plot_fishing_relationships <- function(graph,
     options = list(opts_tooltip(css = STYLES$tooltip_css))
   )
   girafe_options(g,
-                 opts_sizing(rescale = TRUE))
+                 opts_sizing(rescale = TRUE),
+                 opts_selection(type = "none"))
 }
