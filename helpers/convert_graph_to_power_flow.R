@@ -1,3 +1,5 @@
+source("helpers/convert_edges_to_power_flow.R", local = TRUE)$value
+
 convert_graph_to_power_flow <- function(graph) {
   nodes_df <- as_data_frame(graph, what = "vertices")
   edges_sf <- as_data_frame(graph, what = "edges")

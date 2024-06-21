@@ -1,8 +1,6 @@
 plot_fishing_power <- function(graph,
                                # Name of nodes to emphasize
                                emphasize_nodes = c(),
-                               # Date where to get the snapshot
-                               datestring = NULL,
                                # Layout options
                                layout = "nicely",
                                circular = FALSE,
@@ -22,22 +20,21 @@ plot_fishing_power <- function(graph,
   max_weight <- edges$weight %>% max()
   min_weight <- edges$weight %>% min()
   
-  date <- NULL
-  if(!is.null(datestring)) { date <- as_date(datestring) }
-  
   g <- ggraph(graph, layout = layout, circular = circular) +
     # Render nodes
     geom_point_interactive(
       aes(
         x = x,
         y = y,
-        data_id = name,
-        tooltip = sprintf("%s<br/>(%s)", name, subtype),
+        # Replace ' as it causes tooltips to not render correctly in JS
+        data_id = sub("'", "&#39;", name),
+        tooltip = sprintf("%s<br/>(%s)", sub("'", "&#39;", name), subtype),
         fill = subtype,
         # To show people as triangle, organizations as circle
         # See scale_shape_manual code below
         shape = supertype,
       ),
+      alpha = nodes$included,
       size = node_size,
       # Thicken border if emphasized
       color = ifelse(
@@ -57,6 +54,7 @@ plot_fishing_power <- function(graph,
       size = STYLES$node_label_size,
       color = STYLES$node_label_light,
       fontface = ifelse(nodes$name %in% emphasize_nodes, "bold", "plain"),
+      alpha = nodes$included,
     ) +
     
     # Render edges. Use geom_edge fan so edges along the same path don't overlap
@@ -64,15 +62,7 @@ plot_fishing_power <- function(graph,
       aes(
         color = subtype,
         edge_width = weight,
-        # Will identify if the edge is active at this date, if not do not display
-        # Ideally this should be in a function but I can't figure out how to make it work inside aes
-        # Logic is same as is extract_network_snapshot.R
-        filter = ifelse(
-          is.null(date) | is.na(start_date),
-          TRUE,
-          ifelse(start_date <= date &
-                   (is.na(end_date) | end_date > date), TRUE, FALSE)
-        )
+        filter = ifelse(included == 1, TRUE, FALSE)
       ),
       strength = 0.5,
       arrow = STYLES$arrow_style,

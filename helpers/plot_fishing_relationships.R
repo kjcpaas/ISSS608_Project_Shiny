@@ -32,8 +32,9 @@ plot_fishing_relationships <- function(graph,
       aes(
         x = x,
         y = y,
-        data_id = name,
-        tooltip = sprintf("%s<br/>(%s)", name, subtype),
+        # Replace ' as it causes tooltips to not render correctly in JS
+        data_id = sub("'", "&#39;", name),
+        tooltip = sprintf("%s<br/>(%s)", sub("'", "&#39;", name), subtype),
         fill = subtype,
         # To show people as triangle, organizations as circle
         # See scale_shape_manual code below
@@ -121,5 +122,6 @@ plot_fishing_relationships <- function(graph,
   )
   girafe_options(g,
                  opts_sizing(rescale = TRUE),
-                 opts_selection(type = "none"))
+                 opts_selection(type = "none"),
+                 opts_zoom(min = 1, max = 5))
 }

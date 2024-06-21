@@ -1,20 +1,53 @@
 side <- function(ns, subtypes) {
-  sidebarPanel(width = 3,
+  sidebarPanel(
+    width = 3,
+    radioGroupButtons(
+      ns("plotType"),
+      label = "Plot",
+      status = "primary",
+      justified = TRUE,
+      choices = c("Relationship", "Power"),
+      selected = "Relationship",
+      size = "sm"
+    ),
     selectInput(
       ns("nodeSubtype"),
-      "Reference Node",
+      "Select Reference Node",
       choices = subtypes,
       selected = "FishingCompany"
     ),
     DTOutput(ns("refNodeSelection")),
-    sliderInput(ns("distance"), "Network Size (by distance)",
+    strong("Network Size"),
+    helpText("Large networks may take a while to render"),
+    sliderInput(ns("distance"), "",
                 min = 0,
                 max = 10,
                 value = 3),
-    checkboxInput(ns("showFullNetwork"), "All connected nodes (may take long to render)", value = FALSE),
-    
-    dateInput(ns("snapshotDate"), "Network State on Date", value = "2035-05-25"),
-    disabled(checkboxInput(ns("filterByDate"), "Filter by Date", value = FALSE, width = NULL)),
+    checkboxInput(
+      ns("showFullNetwork"),
+      "Show all connected nodes",
+      value = FALSE
+    ),
+    sliderTextInput(
+      ns("snapshotDate"),
+      label = "Select Date", 
+      choices = c(Sys.Date()),
+      force_edges = TRUE
+    )
+  )
+}
+
+titleWell <- function(ns) {
+  wellPanel(
+    fluid = TRUE,
+    textOutput(ns("title"), container = h3),
+    textOutput(ns("subtitle"), container = p),
+    tags$ul(
+      tags$li("Set the parameters for the plot on the left."),
+      tags$li("Hover on the nodes on the plot to see more details."),
+      tags$li("Explore nodes and edges in the tables at the bottom."),
+      tags$li("Select a node to highlight them in the plot.")
+    )
   )
 }
 
@@ -24,7 +57,7 @@ main_panel <- function(ns) {
     fluidRow(
       column(
         width = 4,
-        "Title"
+        titleWell(ns),
       ),
       column(
         width = 8,

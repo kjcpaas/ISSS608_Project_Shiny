@@ -104,7 +104,7 @@ STYLES = list(
   instruction_size = 2.3,
   
   default_instruction = "*Hover on the nodes to see more details.",
-  # Interactive elemnents
+  # Interactive elements
   tooltip_css = paste0(
     "background-color:black;color:white;",
     "font-family:Roboto Condensed;font-size:10pt;",
@@ -128,7 +128,7 @@ COMMON_THEME = theme(
   # Legend styles
   legend.position = "right",
   legend.location = "plot",
-  legend.justification = "top",
+  legend.justification = "bottom",
   legend.direction = "vertical",
   legend.title = element_markdown(
     color = STYLES$title_color,

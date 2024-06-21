@@ -1,27 +1,51 @@
 source("helpers/extract_subnetwork.R", local = TRUE)$value
 source("helpers/extract_network_snapshot.R", local = TRUE)$value
+source("helpers/convert_graph_to_power_flow.R", local = TRUE)$value
 source("helpers/plot_fishing_relationships.R", local = TRUE)$value
+source("helpers/plot_fishing_power.R", local = TRUE)$value
 
 supernetwork <- readRDS("data/rds/supernetwork.rds")
-all_nodes <- as_data_frame(supernetwork, what = 'vertices')
+
+all_nodes <- as_data_frame(supernetwork, what = "vertices")
 
 function(input, output, session) {
-  # Activate snapshot selector
-  observeEvent(input$refNodeSelection_row_last_clicked, {
-    toggleState(id = "filterByDate", condition = !is.null(input$refNodeSelection_row_last_clicked))
-  })
-  
   # Enable/disable related inputs when checkboxes are toggled
   observeEvent(input$showFullNetwork, {
-    toggleState(id = "distance", condition = !input$showFullNetwork)
+    toggleState("distance", condition = !input$showFullNetwork)
   })
   
-  observeEvent(input$filterByDate, {
-    toggleState(id = "snapshotDate", condition = input$filterByDate)
+  observeEvent(graph(), {
+    need(vcount(graph()) > 0, "")
+    e <- as_data_frame(graph(), what = "edges")
+    
+    dates <- c(
+      as.Date(e$start_date),
+      as.Date(e$end_date)
+    ) %>% sort() %>% unique()
+    
+    # Make sure slider has at least 2 values
+    if(length(dates) == 0) {
+      dates <- c(c(Sys.Date()))
+    }
+    
+    if(length(dates) == 1) {
+      dates = c(dates[1], dates[1])
+    }
+    
+    updateSliderTextInput(
+      "snapshotDate",
+      choices = dates,
+      selected = NULL,
+      session = session
+    )
   })
+  
+  # =======================================================
+  # =================   REACTIVE VALUES   =================
+  # =======================================================
   
   refNodeItems <- reactive({
-    nodes <- as_data_frame(supernetwork, what = 'vertices')
+    nodes <- as_data_frame(supernetwork, what = "vertices")
     rownames(nodes) <- NULL
     
     if(!is.null(input$nodeSubtype)) {
@@ -32,8 +56,8 @@ function(input, output, session) {
   })
   
   refNode <- reactive({
-    if(length(input$refNodeSelection_row_last_clicked) > 0) {
-      refNodeItems()$name[input$refNodeSelection_row_last_clicked]
+    if(length(input$refNodeSelection_rows_selected) > 0) {
+      refNodeItems()$name[input$refNodeSelection_rows_selected[1]]
     } else {
       NULL
     }
@@ -43,28 +67,30 @@ function(input, output, session) {
     ifelse(input$showFullNetwork, -1, input$distance)
   })
   
-  snapshotDate <- reactive({
-    ifelse(input$filterByDate, input$snapshotDate, "")
-  })
-  
   # Generate graph
   graph <- reactive({
-    need(length(refNode()) > 0, "Select a reference node to start.")
+    need(length(refNode()) > 0, "")
     
-    supernetwork %>%
+    g <- supernetwork %>%
       extract_subnetwork(
         node_name = refNode(),
         distance = distance()
       ) %>%
-      extract_network_snapshot(snapshotDate())
+      extract_network_snapshot(input$snapshotDate)
+    
+    if(input$plotType == "Power") {
+      g <- g %>% convert_graph_to_power_flow()
+    }
+    
+    g
   })
   
   nodes <- reactive({
-    n <- as_data_frame(graph(), what = 'vertices') %>% filter(included == TRUE)
+    n <- as_data_frame(graph(), what = "vertices") %>% filter(included == TRUE)
     rownames(n) <- NULL
     
     if(nrow(n) > 0) {
-      n %>% arrange(name) %>% select(name, subtype)
+      n %>% arrange(name) %>% select(name, alias, subtype)
     } else {
       NULL
     }
@@ -72,9 +98,9 @@ function(input, output, session) {
   
   edges <- reactive({
     if(vcount(graph()) > 0) {
-      as_data_frame(graph(), what = 'edges') %>%
+      as_data_frame(graph(), what = "edges") %>%
         filter(included == TRUE) %>%
-        select(from, to, subtype, start_date, end_date)
+        select(from, to, subtype, weight, start_date, end_date)
     } else {
       NULL
     }
@@ -83,19 +109,29 @@ function(input, output, session) {
   # =======================================================
   # =====================   OUTPUTS   =====================
   # =======================================================
+  output$title <- renderText(paste(input$plotType, "Plot"))
+  output$subtitle <- renderText({
+    if(input$plotType == "Power") {
+      "Shows the power dynamic in the network. Arrow points to the more powerful entity."
+    } else {
+      "Shows the relationship in the network from the Mini-Challenge 3 Data."
+    }
+  })
+  
   output$refNodeSelection <- renderDT(
     refNodeItems(),
-    selection = 'single',
-    extensions = 'Scroller',
+    selection = list(mode = 'single', selected = c(1)),
+    extensions = "Scroller",
     rownames = FALSE,
     colnames = rep("", ncol(refNodeItems())),
+    class = "compact row-border hover",
     options = list(
       dom = "ft",
       deferRender = TRUE,
-      scrollY = 200,
+      scrollY = 180,
       scroller = TRUE,
       ordering = FALSE,
-      language = list(search = '', searchPlaceholder = 'Search nodes')
+      language = list(search = "", searchPlaceholder = "Search nodes")
     )
   )
   
@@ -103,10 +139,18 @@ function(input, output, session) {
     validate(
       need(length(refNode()) > 0, "Please select a node to start")
     )
-    graph() %>%
-      plot_fishing_relationships(
-        emphasize_nodes=c(refNode(), nodes()$name[input$nodesList_rows_selected])
-      )
+    
+    pl <- if(input$plotType == "Power") {
+      graph() %>%
+        plot_fishing_power(
+          emphasize_nodes=c(refNode(), nodes()$name[input$nodesList_rows_selected])
+        )
+    } else {
+      graph() %>%
+        plot_fishing_relationships(
+          emphasize_nodes=c(refNode(), nodes()$name[input$nodesList_rows_selected])
+        )
+    }
   })
   
   output$nodesList <- renderDT({
@@ -117,13 +161,14 @@ function(input, output, session) {
     datatable(
       nodes(),
       rownames = TRUE,
-      extensions = 'Scroller',
+      extensions = "Scroller",
+      class = "compact hover row-border",
       options = list(
         dom = "ift",
         deferRender = TRUE,
-        scrollY = 300,
+        scrollY = 240,
         scroller = TRUE,
-        language = list(search = '', searchPlaceholder = 'Search')
+        language = list(search = "", searchPlaceholder = "Search")
       )
     )
   })
@@ -131,16 +176,16 @@ function(input, output, session) {
   output$edgesList <- renderDT(
     edges(),
     selection = "none",
-    rownames = FALSE,
-    extensions = 'Scroller',
+    extensions = "Scroller",
+    class = "compact hover row-border",
     options = list(
       dom = "ift",
       deferRender = TRUE,
-      scrollY = 300,
+      scrollY = 240,
       scroller = TRUE,
       language = list(
-        search = '',
-        searchPlaceholder = 'Search'
+        search = "",
+        searchPlaceholder = "Search"
       )
     )
   )
