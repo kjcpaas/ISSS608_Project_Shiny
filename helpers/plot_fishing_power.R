@@ -3,11 +3,6 @@ plot_fishing_power <- function(graph,
                                emphasize_nodes = c(),
                                # Layout options
                                layout = "nicely",
-                               circular = FALSE,
-                               # Texts
-                               title = NULL,
-                               subtitle = NULL,
-                               caption = STYLES$default_caption,
                                # Plot styling
                                node_size = STYLES$node_size,
                                arrow_margin = STYLES$arrow_margin,
@@ -20,7 +15,7 @@ plot_fishing_power <- function(graph,
   max_weight <- edges$weight %>% max()
   min_weight <- edges$weight %>% min()
   
-  g <- ggraph(graph, layout = layout, circular = circular) +
+  g <- ggraph(graph, layout = layout) +
     # Render nodes
     geom_point_interactive(
       aes(
@@ -111,15 +106,17 @@ plot_fishing_power <- function(graph,
     theme_graph(base_family = STYLES$font_family,
                 plot_margin = margin(0)) +
     
-    plot_annotation(title = title,
-                    subtitle = subtitle,
-                    caption = caption) &
     COMMON_THEME
   
   girafe(
     ggobj = g,
     width_svg = STYLES$svg_width,
     height_svg = STYLES$svg_height,
-    options = list(opts_tooltip(css = STYLES$tooltip_css))
+    options = list(
+      opts_tooltip(css = STYLES$tooltip_css),
+      opts_sizing(rescale = TRUE),
+      opts_selection(type = "none"),
+      opts_zoom(min = 1, max = 5)
+    )
   )
 }

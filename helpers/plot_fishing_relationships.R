@@ -3,11 +3,6 @@ plot_fishing_relationships <- function(graph,
                                        emphasize_nodes = c(),
                                        # Layout options
                                        layout = "nicely",
-                                       circular = FALSE,
-                                       # Texts
-                                       title = NULL,
-                                       subtitle = NULL,
-                                       instruction = STYLES$default_instruction,
                                        # Plot styling
                                        node_size = STYLES$node_size,
                                        arrow_margin = STYLES$arrow_margin,
@@ -21,12 +16,7 @@ plot_fishing_relationships <- function(graph,
   
   nodes <- as_data_frame(graph, what = "vertices")
   
-  g <- ggraph(graph, layout = layout, circular = circular) +
-    annotate("label", label=instruction,
-      x=-Inf, y=-Inf, hjust=0, vjust=0,
-      color = STYLES$muted_color,
-      family = STYLES$font_family, size = STYLES$instruction_size, fontface = "italic"
-    ) +
+  g <- ggraph(graph, layout = layout) +
     # Render nodes
     geom_point_interactive(
       aes(
@@ -109,19 +99,17 @@ plot_fishing_relationships <- function(graph,
     unset_graph_style() +
     theme_graph(base_family = STYLES$font_family,
                 plot_margin = margin(0)) +
-    
-    plot_annotation(title = title,
-                    subtitle = subtitle) &
     COMMON_THEME
   
   g <- girafe(
     ggobj = g,
     width_svg = STYLES$svg_width,
     height_svg = STYLES$svg_height,
-    options = list(opts_tooltip(css = STYLES$tooltip_css))
+    options = list(
+      opts_tooltip(css = STYLES$tooltip_css),
+      opts_sizing(rescale = TRUE),
+      opts_selection(type = "none"),
+      opts_zoom(min = 1, max = 5)
+    )
   )
-  girafe_options(g,
-                 opts_sizing(rescale = TRUE),
-                 opts_selection(type = "none"),
-                 opts_zoom(min = 1, max = 5))
 }

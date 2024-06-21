@@ -101,9 +101,7 @@ STYLES = list(
   node_label_size = 2,
   node_label_dark = "black",
   node_label_light = "white",
-  instruction_size = 2.3,
-  
-  default_instruction = "*Hover on the nodes to see more details.",
+
   # Interactive elements
   tooltip_css = paste0(
     "background-color:black;color:white;",
@@ -118,11 +116,6 @@ STYLES = list(
 
 COMMON_THEME = theme(
   text = element_text(family = STYLES$font_family, color = STYLES$normal_text_color),
-  plot.title = element_markdown(
-    color = STYLES$title_color,
-    face = "bold",
-    size = unit(10, "pt")
-  ),
   plot.margin = margin(2, 0, 0, 0, unit = "pt"),
   
   # Legend styles
