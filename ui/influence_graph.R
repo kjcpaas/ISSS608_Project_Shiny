@@ -1,4 +1,4 @@
-ng_side <- function(ns, subtypes) {
+ig_side <- function(ns, subtypes) {
   sidebarPanel(
     width = 3,
     radioGroupButtons(
@@ -6,8 +6,8 @@ ng_side <- function(ns, subtypes) {
       label = "Plot",
       status = "primary",
       justified = TRUE,
-      choices = c("Relationship", "Power"),
-      selected = "Relationship",
+      choices = c("Power Holders", "Power Brokers"),
+      selected = "Power Holders",
       size = "sm"
     ),
     selectInput(
@@ -42,7 +42,7 @@ ng_side <- function(ns, subtypes) {
   )
 }
 
-ng_titleWell <- function(ns) {
+ig_titleWell <- function(ns) {
   wellPanel(
     fluid = TRUE,
     textOutput(ns("title"), container = h3),
@@ -56,13 +56,13 @@ ng_titleWell <- function(ns) {
   )
 }
 
-ng_main_panel <- function(ns) {
+ig_main_panel <- function(ns) {
   mainPanel(
     width = 9,
     fluidRow(
       column(
         width = 4,
-        ng_titleWell(ns),
+        ig_titleWell(ns),
       ),
       column(
         width = 8,
@@ -80,5 +80,5 @@ function(supernetwork, id) {
   ns = NS(id)
   subtypes <- as_data_frame(supernetwork, what = "vertices")$subtype %>% unique()
   
-  tabPanel("Network Graphs", sidebarLayout(ng_side(ns, subtypes), ng_main_panel(ns)))
+  tabPanel("Influence Graphs", sidebarLayout(ig_side(ns, subtypes), ig_main_panel(ns)))
 }

@@ -10,11 +10,14 @@ library(igraph)
 library(ggtext)
 library(patchwork)
 library(DT)
+library(scales)
 
 source("helpers/Settings.R", local = TRUE)$value
 
 networkGraphUI <- source("ui/network_graph.R", local = TRUE)$value
 networkGraphServer <- source("server/network_graph.R", local = TRUE)$value
+influenceGraphUI <- source("ui/influence_graph.R", local = TRUE)$value
+influenceGraphServer <- source("server/influence_graph.R", local = TRUE)$value
 
 supernetwork <- readRDS("data/rds/supernetwork.rds")
 
@@ -25,11 +28,13 @@ ui <- tagList(
     fluid = TRUE,
     theme = shinytheme("cosmo"),
     networkGraphUI(supernetwork, "networkGraph"),
+    influenceGraphUI(supernetwork, "influenceGraph"),
   )
 )
 
 server <- function(input, output, session) {
   moduleServer("networkGraph", networkGraphServer, session = session)
+  moduleServer("influenceGraph", influenceGraphServer, session = session)
 }
 
 shinyApp(ui = ui, server = server)

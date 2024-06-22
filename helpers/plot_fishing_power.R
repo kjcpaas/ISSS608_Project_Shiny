@@ -47,7 +47,7 @@ plot_fishing_power <- function(graph,
       aes(label = alias),
       family = STYLES$font_family,
       size = STYLES$node_label_size,
-      color = STYLES$node_label_light,
+      color = STYLES$node_label_dark,
       fontface = ifelse(nodes$name %in% emphasize_nodes, "bold", "plain"),
       alpha = nodes$included,
     ) +
