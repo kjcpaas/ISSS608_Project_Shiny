@@ -33,6 +33,11 @@ side <- function(ns, subtypes) {
       label = "Select Date", 
       choices = c(Sys.Date()),
       force_edges = TRUE
+    ),
+    checkboxInput(
+      ns("showAllTimeConnections"),
+      "Show all-time connections",
+      value = TRUE
     )
   )
 }

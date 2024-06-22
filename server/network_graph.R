@@ -14,6 +14,11 @@ function(input, output, session) {
     toggleState("distance", condition = !input$showFullNetwork)
   })
   
+  # Enable/disable related inputs when checkboxes are toggled
+  observeEvent(input$showAllTimeConnections, {
+    toggleState("snapshotDate", condition = !input$showAllTimeConnections)
+  })
+  
   observeEvent(graph(), {
     need(vcount(graph()) > 0, "")
     e <- as_data_frame(graph(), what = "edges")
@@ -67,6 +72,10 @@ function(input, output, session) {
     ifelse(input$showFullNetwork, -1, input$distance)
   })
   
+  snapshotDate <- reactive({
+    ifelse(input$showAllTimeConnections, "", input$snapshotDate)
+  })
+  
   # Generate graph
   graph <- reactive({
     need(length(refNode()) > 0, "")
@@ -76,7 +85,7 @@ function(input, output, session) {
         node_name = refNode(),
         distance = distance()
       ) %>%
-      extract_network_snapshot(input$snapshotDate)
+      extract_network_snapshot(snapshotDate())
     
     if(input$plotType == "Power") {
       g <- g %>% convert_graph_to_power_flow()
@@ -100,7 +109,7 @@ function(input, output, session) {
     if(vcount(graph()) > 0) {
       as_data_frame(graph(), what = "edges") %>%
         filter(included == TRUE) %>%
-        select(from, to, subtype, weight, start_date, end_date)
+        select(from, to, subtype, start_date, end_date)
     } else {
       NULL
     }
