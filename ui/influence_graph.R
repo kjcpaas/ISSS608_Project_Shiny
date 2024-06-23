@@ -17,8 +17,7 @@ ig_side <- function(ns, subtypes) {
       selected = "FishingCompany"
     ),
     DTOutput(ns("refNodeSelection")),
-    strong("Network Size"),
-    helpText("Large networks may take a while to render"),
+    strong("Distance from Reference"),
     sliderInput(ns("distance"), "",
                 min = 0,
                 max = 10,
@@ -52,7 +51,8 @@ ig_titleWell <- function(ns) {
       tags$li("Hover on the nodes on the plot to see more details."),
       tags$li("Explore nodes and edges in the tables at the bottom."),
       tags$li("Select nodes from the table to highlight them in the plot.")
-    )
+    ),
+    em("Large networks may take a while to render"),
   )
 }
 

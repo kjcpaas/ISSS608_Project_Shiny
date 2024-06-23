@@ -16,6 +16,7 @@ source("helpers/Settings.R", local = TRUE)$value
 
 networkGraphUI <- source("ui/network_graph.R", local = TRUE)$value
 networkGraphServer <- source("server/network_graph.R", local = TRUE)$value
+stylesUI <- source("ui/styles.R", local = TRUE)$value
 influenceGraphUI <- source("ui/influence_graph.R", local = TRUE)$value
 influenceGraphServer <- source("server/influence_graph.R", local = TRUE)$value
 
@@ -23,6 +24,7 @@ supernetwork <- readRDS("data/rds/supernetwork.rds")
 
 ui <- tagList(
   useShinyjs(),
+  stylesUI,
   navbarPage(
     title = "Vast Challenge: Mini-challenge 3",
     fluid = TRUE,
