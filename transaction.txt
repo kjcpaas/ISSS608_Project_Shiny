@@ -1,0 +1,12 @@
+Company
+Downs Group
+
+Person
+1st group: 1-4
+2nd group: 5-22
+
+Transactions
+Abbott-Harrison (merger from close industries)
+Acevedo PLC (merger from close industries)
+Adams-Byrd (A lot of companies from similar shareholders)
+
