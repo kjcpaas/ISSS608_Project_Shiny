@@ -59,10 +59,8 @@ function(input, output, session) {
     
     degree_df <- read.csv("./data/degree.csv")
     nodes <- left_join(nodes, degree_df, by = "name")
-    print(nodes)
     nodes <- nodes %>%
       arrange(desc(degree))
-    # print(nodes[0])
     nodes %>% select(name)
   })
   
@@ -169,6 +167,27 @@ function(input, output, session) {
           emphasize_nodes=c(refNode(), nodes()$name[input$nodesList_rows_selected])
         )
     }
+  })
+  
+  output$temporal <- renderGirafe({
+    validate(
+      need(length(refNode()) > 0, "Please select a node to start")
+    )
+    data <- read.csv("./data/transaction.csv")
+    node_name <- refNodeItems()$name[input$refNodeSelection_rows_selected[1]]
+    grouped_data <- data %>%
+      filter(source== node_name | target==node_name) %>%
+      group_by(year) %>%
+      summarize(count = n())
+    g <- ggplot(grouped_data, aes(x = year, y = count)) +
+      geom_line() +
+      geom_point() +  # Add points to emphasize the data points
+      labs(title = "Yearly Activities",
+           x = "Year",
+           y = "No. of activities") +
+      scale_y_continuous(breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)) +
+      theme_minimal()
+    girafe(ggobj = g)
   })
   
   output$nodesList <- renderDT({

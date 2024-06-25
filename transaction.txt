@@ -6,6 +6,8 @@ Person
 2nd group: 5-22
 
 Transactions
+Person - Isla Davis (Companies interconnected)
+Downs group (Many company join together)
 Abbott-Harrison (merger from close industries)
 Acevedo PLC (merger from close industries)
 Adams-Byrd (A lot of companies from similar shareholders)

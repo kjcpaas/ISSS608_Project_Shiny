@@ -61,12 +61,18 @@ corp_main_panel <- function(ns) {
     width = 9,
     fluidRow(
       column(
-        width = 4,
+        width = 12,
         corp_titleWell(ns),
       ),
+    ),
+    fluidRow(
       column(
-        width = 8,
+        width = 6,
         girafeOutput(ns("plot"))
+      ),
+      column(
+        width = 6,
+        girafeOutput(ns("temporal"))
       ),
     ),
     tabsetPanel(
