@@ -61,7 +61,7 @@ function(input, output, session) {
     nodes <- left_join(nodes, degree_df, by = "name")
     nodes <- nodes %>%
       arrange(desc(degree))
-    nodes %>% select(name)
+    nodes %>% select(name, degree)
   })
   
   refNode <- reactive({
@@ -124,6 +124,7 @@ function(input, output, session) {
     refNodeItems(),
     selection = list(mode = 'single', selected = c(1)),
     extensions = "Scroller",
+    plugins = "ellipsis",
     rownames = FALSE,
     colnames = rep("", ncol(refNodeItems())),
     class = "compact row-border hover",
@@ -133,7 +134,11 @@ function(input, output, session) {
       scrollY = 180,
       scroller = TRUE,
       ordering = FALSE,
-      language = list(search = "", searchPlaceholder = "Search nodes")
+      language = list(search = "", searchPlaceholder = "Search nodes"),
+      columnDefs = list(list(
+        targets = c(0),
+        render = JS("$.fn.dataTable.render.ellipsis(36)")
+      ))
     )
   )
   

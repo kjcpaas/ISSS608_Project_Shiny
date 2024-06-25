@@ -129,7 +129,7 @@ function(input, output, session) {
   output$title <- renderText(paste(input$plotType, "Plot"))
   output$subtitle <- renderText({
     if(input$plotType == "Power") {
-      "Shows the power dynamic in the network. Arrow points to the more powerful entity."
+      "Shows the power dynamic in the network. Arrow points to the more powerful entity. Used for Influence Graphs."
     } else {
       "Shows the relationship in the network from the Mini-Challenge 3 Data."
     }

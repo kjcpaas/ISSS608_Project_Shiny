@@ -8,6 +8,10 @@ corp_side <- function(ns, subtypes) {
       selected = "FishingCompany"
     ),
     DTOutput(ns("refNodeSelection")),
+    div(
+      "List sorted by number of activities",
+      class = "alert alert-info plot-instruction"
+    ),
     strong("Network Size"),
     sliderInput(ns("distance"), "",
                 min = 0,
@@ -41,7 +45,7 @@ corp_titleWell <- function(ns) {
   wellPanel(
     fluid = TRUE,
     h3("Corporate Structures"),
-    p("Reflect the corporate structures in the fishing business network"),
+    p("Reflects the corporate structures around the chosen node"),
   )
 }
 
