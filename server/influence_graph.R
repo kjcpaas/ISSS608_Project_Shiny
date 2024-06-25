@@ -74,14 +74,21 @@ function(input, output, session) {
     ifelse(input$showAllTimeConnections, "", input$snapshotDate)
   })
   
-  template_graph <- reactive({
+  # Subnetwork unfiltered by date
+  subnetwork <- reactive({
     need(length(refNode()) > 0, "")
     
     supernetwork %>%
       extract_subnetwork(
         node_name = refNode(),
         distance = distance()
-      ) %>%
+      )
+  })
+  
+  template_graph <- reactive({
+    need(length(refNode()) > 0, "")
+    
+    subnetwork() %>%
     convert_graph_to_power_flow() %>%
     extract_network_snapshot(snapshotDate())
   })
@@ -150,6 +157,16 @@ function(input, output, session) {
       language = list(search = "", searchPlaceholder = "Search nodes")
     )
   )
+  
+  output$temporal <- renderGirafe({
+    validate(
+      need(length(refNode()) > 0, "Please select a node to start")
+    )
+    
+    subnetwork() %>%
+      get_activities_by_year() %>%
+      plot_temporal(title = "Yearly Activities for this Network")
+  })
   
   output$plot <- renderGirafe({
     validate(

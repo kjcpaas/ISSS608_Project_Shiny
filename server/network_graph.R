@@ -3,6 +3,8 @@ source("helpers/extract_network_snapshot.R", local = TRUE)$value
 source("helpers/convert_graph_to_power_flow.R", local = TRUE)$value
 source("helpers/plot_fishing_relationships.R", local = TRUE)$value
 source("helpers/plot_fishing_power.R", local = TRUE)$value
+source("helpers/plot_temporal.R", local = TRUE)$value
+source("helpers/get_activities_by_year.R", local = TRUE)$value
 
 supernetwork <- readRDS("data/rds/supernetwork.rds")
 
@@ -76,16 +78,22 @@ function(input, output, session) {
     ifelse(input$showAllTimeConnections, "", input$snapshotDate)
   })
   
+  # Subnetwork unfiltered by date
+  subnetwork <- reactive({
+    need(length(refNode()) > 0, "")
+    
+    supernetwork %>%
+      extract_subnetwork(
+        node_name = refNode(),
+        distance = distance()
+      )
+  })
+  
   # Generate graph
   graph <- reactive({
     need(length(refNode()) > 0, "")
     
-    g <- supernetwork %>%
-      extract_subnetwork(
-        node_name = refNode(),
-        distance = distance()
-      ) %>%
-      extract_network_snapshot(snapshotDate())
+    g <- subnetwork() %>% extract_network_snapshot(snapshotDate())
     
     if(input$plotType == "Power") {
       g <- g %>% convert_graph_to_power_flow()
@@ -143,6 +151,16 @@ function(input, output, session) {
       language = list(search = "", searchPlaceholder = "Search nodes")
     )
   )
+  
+  output$temporal <- renderGirafe({
+    validate(
+      need(length(refNode()) > 0, "Please select a node to start")
+    )
+    
+    subnetwork() %>%
+      get_activities_by_year() %>%
+      plot_temporal(title = "Yearly Activities for this Network")
+  })
   
   output$plot <- renderGirafe({
     validate(

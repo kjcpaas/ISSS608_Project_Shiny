@@ -27,6 +27,11 @@ ig_side <- function(ns, subtypes) {
       "Show all connected nodes",
       value = FALSE
     ),
+    div(
+      strong("Warning: "),
+      "Large networks may take a while to render",
+      class = "alert alert-warning plot-instruction"
+    ),
     sliderTextInput(
       ns("snapshotDate"),
       label = "Select Date", 
@@ -46,13 +51,6 @@ ig_titleWell <- function(ns) {
     fluid = TRUE,
     textOutput(ns("title"), container = h3),
     textOutput(ns("subtitle"), container = p),
-    tags$ul(
-      tags$li("Set the parameters for the plot on the left."),
-      tags$li("Hover on the nodes on the plot to see more details."),
-      tags$li("Explore nodes and edges in the tables at the bottom."),
-      tags$li("Select nodes from the table to highlight them in the plot.")
-    ),
-    em("Large networks may take a while to render"),
   )
 }
 
@@ -63,14 +61,23 @@ ig_main_panel <- function(ns) {
       column(
         width = 4,
         ig_titleWell(ns),
+        girafeOutput(ns("temporal"))
       ),
       column(
         width = 8,
-        girafeOutput(ns("plot"))
+        girafeOutput(ns("plot")),
+        em("*Hover on the nodes on the plot to see more details.", class = "text-muted")
       ),
     ),
     tabsetPanel(
-      tabPanel("Nodes", DTOutput(ns("nodesList"))),
+      tabPanel(
+        "Nodes",
+        div(
+          "Select nodes from the table to highlight them in the plot.",
+          class = "alert alert-info plot-instruction"
+        ),
+        DTOutput(ns("nodesList")),
+      ),
       tabPanel("Edges", DTOutput(ns("edgesList"))),
     )
   )

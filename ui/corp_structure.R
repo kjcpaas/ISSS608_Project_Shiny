@@ -18,7 +18,11 @@ corp_side <- function(ns, subtypes) {
       "Show all connected nodes",
       value = FALSE
     ),
-    helpText(em("Large networks may take a while to render"), class = "text-danger"),
+    div(
+      strong("Warning: "),
+      "Large networks may take a while to render",
+      class = "alert alert-warning plot-instruction"
+    ),
     sliderTextInput(
       ns("snapshotDate"),
       label = "Select Date", 
@@ -57,7 +61,14 @@ corp_main_panel <- function(ns) {
       ),
     ),
     tabsetPanel(
-      tabPanel("Nodes", DTOutput(ns("nodesList"))),
+      tabPanel(
+        "Nodes",
+        div(
+          "Select nodes from the table to highlight them in the plot.",
+          class = "alert alert-info plot-instruction"
+        ),
+        DTOutput(ns("nodesList"))
+      ),
       tabPanel("Edges", DTOutput(ns("edgesList"))),
     )
   )

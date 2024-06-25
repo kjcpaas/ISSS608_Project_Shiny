@@ -18,5 +18,10 @@ plot_temporal <- function(data, title = "Yearly Activities") {
       axis.ticks = element_line(),
       plot.title = element_text(face = "bold"),
     )
-  girafe(ggobj = g)
+  girafe(
+    ggobj = g,
+    options = list(
+      opts_tooltip(css = STYLES$tooltip_css)
+    )
+  )
 }

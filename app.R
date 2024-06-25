@@ -30,7 +30,8 @@ ui <- tagList(
   navbarPage(
     title = "The Big Fish",
     fluid = TRUE,
-    theme = shinytheme("cosmo"),
+    inverse = TRUE,
+    collapsible = TRUE,
     corpGraphUI(supernetwork, "corpGraph"),
     networkGraphUI(supernetwork, "networkGraph"),
     influenceGraphUI(supernetwork, "influenceGraph"),

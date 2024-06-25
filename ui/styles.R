@@ -41,6 +41,18 @@ tags$style(
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
       }
+      
+      .plot-instruction {
+        padding: 4px 6px;
+      }
+      
+      .tabbable .tab-pane {
+        padding-top: 8px;
+      }
+      
+      .tabbable .plot-instruction {
+        margin-bottom: 8px;
+      }
     "
   )
 )
