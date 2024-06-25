@@ -2,7 +2,7 @@ source("helpers/extract_subnetwork.R", local = TRUE)$value
 source("helpers/extract_network_snapshot.R", local = TRUE)$value
 source("helpers/convert_graph_to_power_flow.R", local = TRUE)$value
 source("helpers/plot_fishing_relationships.R", local = TRUE)$value
-source("helpers/plot_fishing_power.R", local = TRUE)$value
+source("helpers/plot_temporal.R", local = TRUE)$value
 
 supernetwork <- readRDS("data/rds/supernetwork.rds")
 
@@ -84,18 +84,12 @@ function(input, output, session) {
   graph <- reactive({
     need(length(refNode()) > 0, "")
     
-    g <- supernetwork %>%
+    supernetwork %>%
       extract_subnetwork(
         node_name = refNode(),
         distance = distance()
       ) %>%
       extract_network_snapshot(snapshotDate())
-    
-    if(input$plotType == "Power") {
-      g <- g %>% convert_graph_to_power_flow()
-    }
-    
-    g
   })
   
   nodes <- reactive({
@@ -122,18 +116,10 @@ function(input, output, session) {
     }
   })
   
+  
   # =======================================================
   # =====================   OUTPUTS   =====================
   # =======================================================
-  output$title <- renderText(paste(input$plotType, "Plot"))
-  output$subtitle <- renderText({
-    if(input$plotType == "Power") {
-      "Shows the power dynamic in the network. Arrow points to the more powerful entity."
-    } else {
-      "Shows the relationship in the network from the Mini-Challenge 3 Data."
-    }
-  })
-  
   output$refNodeSelection <- renderDT(
     refNodeItems(),
     selection = list(mode = 'single', selected = c(1)),
@@ -156,17 +142,8 @@ function(input, output, session) {
       need(length(refNode()) > 0, "Please select a node to start")
     )
     
-    pl <- if(input$plotType == "Power") {
-      graph() %>%
-        plot_fishing_power(
-          emphasize_nodes=c(refNode(), nodes()$name[input$nodesList_rows_selected])
-        )
-    } else {
-      graph() %>%
-        plot_fishing_relationships(
-          emphasize_nodes=c(refNode(), nodes()$name[input$nodesList_rows_selected])
-        )
-    }
+    graph() %>%
+      plot_fishing_relationships(emphasize_nodes = c(refNode(), nodes()$name[input$nodesList_rows_selected]))
   })
   
   output$temporal <- renderGirafe({
@@ -174,20 +151,14 @@ function(input, output, session) {
       need(length(refNode()) > 0, "Please select a node to start")
     )
     data <- read.csv("./data/transaction.csv")
-    node_name <- refNodeItems()$name[input$refNodeSelection_rows_selected[1]]
     grouped_data <- data %>%
-      filter(source== node_name | target==node_name) %>%
+      filter(source== refNode() | target==refNode()) %>%
       group_by(year) %>%
       summarize(count = n())
-    g <- ggplot(grouped_data, aes(x = year, y = count)) +
-      geom_line() +
-      geom_point() +  # Add points to emphasize the data points
-      labs(title = "Yearly Activities",
-           x = "Year",
-           y = "No. of activities") +
-      scale_y_continuous(breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)) +
-      theme_minimal()
-    girafe(ggobj = g)
+    plot_temporal(
+      grouped_data,
+      title = paste0("Yearly Activities for ", refNode())
+    )
   })
   
   output$nodesList <- renderDT({

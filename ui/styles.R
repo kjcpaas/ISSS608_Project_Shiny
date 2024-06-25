@@ -7,21 +7,31 @@ tags$style(
       body, h1, h2, h3, h4, h5, h6 {
         font-family: 'Roboto Condensed', sans-serif;
       }
+      
+      h3 {
+        margin-top: 0;
+      }
 
-      #networkGraph-refNodeSelection, #influenceGraph-refNodeSelection {
+      #corpGraph-refNodeSelection,
+      #networkGraph-refNodeSelection,
+      #influenceGraph-refNodeSelection {
         margin-bottom: 1rem;
       }
 
+      #corpGraph-refNodeSelection .dataTables_filter,
       #networkGraph-refNodeSelection .dataTables_filter,
       #influenceGraph-refNodeSelection .dataTables_filter{
         float: none;
       }
 
+      #corpGraph-refNodeSelection .dataTables_scrollHead,
       #networkGraph-refNodeSelection .dataTables_scrollHead,
       #influenceGraph-refNodeSelection .dataTables_scrollHead{
         height: 0;
       }
 
+      #corpGraph-refNodeSelection .dataTables_filter input,
+      #corpGraph-refNodeSelection .dataTables_filter label,
       #networkGraph-refNodeSelection .dataTables_filter input,
       #networkGraph-refNodeSelection .dataTables_filter label,
       #influenceGraph-refNodeSelection .dataTables_filter input,

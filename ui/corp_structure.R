@@ -1,15 +1,6 @@
 corp_side <- function(ns, subtypes) {
   sidebarPanel(
     width = 3,
-    radioGroupButtons(
-      ns("plotType"),
-      label = "Plot",
-      status = "primary",
-      justified = TRUE,
-      choices = c("Relationship", "Power"),
-      selected = "Relationship",
-      size = "sm"
-    ),
     selectInput(
       ns("nodeSubtype"),
       "Select Reference Node",
@@ -18,7 +9,6 @@ corp_side <- function(ns, subtypes) {
     ),
     DTOutput(ns("refNodeSelection")),
     strong("Network Size"),
-    helpText("Large networks may take a while to render"),
     sliderInput(ns("distance"), "",
                 min = 0,
                 max = 3,
@@ -28,6 +18,7 @@ corp_side <- function(ns, subtypes) {
       "Show all connected nodes",
       value = FALSE
     ),
+    helpText(em("Large networks may take a while to render"), class = "text-danger"),
     sliderTextInput(
       ns("snapshotDate"),
       label = "Select Date", 
@@ -45,14 +36,8 @@ corp_side <- function(ns, subtypes) {
 corp_titleWell <- function(ns) {
   wellPanel(
     fluid = TRUE,
-    textOutput(ns("title"), container = h3),
-    textOutput(ns("subtitle"), container = p),
-    tags$ul(
-      tags$li("Set the parameters for the plot on the left."),
-      tags$li("Hover on the nodes on the plot to see more details."),
-      tags$li("Explore nodes and edges in the tables at the bottom."),
-      tags$li("Select nodes from the table to highlight them in the plot.")
-    )
+    h3("Corporate Structures"),
+    p("Reflect the corporate structures in the fishing business network"),
   )
 }
 
@@ -61,18 +46,14 @@ corp_main_panel <- function(ns) {
     width = 9,
     fluidRow(
       column(
-        width = 12,
+        width = 4,
         corp_titleWell(ns),
-      ),
-    ),
-    fluidRow(
-      column(
-        width = 6,
-        girafeOutput(ns("plot"))
-      ),
-      column(
-        width = 6,
         girafeOutput(ns("temporal"))
+      ),
+      column(
+        width = 8,
+        girafeOutput(ns("plot")),
+        em("*Hover on the nodes on the plot to see more details.", class = "text-muted")
       ),
     ),
     tabsetPanel(

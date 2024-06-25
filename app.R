@@ -8,7 +8,6 @@ library(ggraph)
 library(ggiraph)
 library(igraph)
 library(ggtext)
-library(patchwork)
 library(DT)
 library(scales)
 
@@ -29,7 +28,7 @@ ui <- tagList(
   useShinyjs(),
   stylesUI,
   navbarPage(
-    title = "Vast Challenge: Mini-challenge 3",
+    title = "The Big Fish",
     fluid = TRUE,
     theme = shinytheme("cosmo"),
     corpGraphUI(supernetwork, "corpGraph"),
