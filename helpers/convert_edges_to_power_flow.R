@@ -3,13 +3,13 @@ convert_edges_to_power_flow <- function(edges) {
     return(edges)
   }
   
-  # Employee -> Employer, weight: 2
-  works_for <- edges %>% filter(subtype == "WorksFor") %>% mutate(weight = 2)
+  # Employee -> Employer, weight: 3
+  works_for <- edges %>% filter(subtype == "WorksFor") %>% mutate(weight = 3)
   
-  # Person1 -> Person2, weight: 1 
-  family <- edges %>% filter(subtype == "FamilyRelationship") %>% mutate(weight = 1)
+  # Person1 -> Person2, weight: 2
+  family <- edges %>% filter(subtype == "FamilyRelationship") %>% mutate(weight = 2)
   
-  # Shareholder <- Company, weight: 2
+  # Shareholder <- Company, weight: 3
   shareholder <- edges %>% filter(subtype == "Shareholdership") %>%
     mutate(
       temp = from,
@@ -21,7 +21,7 @@ convert_edges_to_power_flow <- function(edges) {
     ) %>%
     select(from, to, supertype, subtype, start_date, end_date, weight, included)
   
-  # BeneficialOwner <- Company, weight: 3
+  # BeneficialOwner <- Company, weight: 5
   owner <- edges %>% filter(subtype == "BeneficialOwnership") %>%
     mutate(
       temp = from,

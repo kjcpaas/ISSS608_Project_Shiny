@@ -1,6 +1,5 @@
 library(shiny)
 library(shinyjs)
-library(shinythemes)
 library(shinyWidgets)
 library(tidyverse)
 library(tidygraph)
