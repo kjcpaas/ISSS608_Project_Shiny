@@ -8,7 +8,7 @@ plot_temporal <- function(data, title = "Yearly Activities") {
     labs(title = title,
          x = "Year",
          y = "No. of activities") +
-    scale_y_continuous(breaks = function(x) seq(floor(min(x)), ceiling(max(x)), by = 1)) +
+    scale_y_continuous(breaks = breaks_pretty()) +
     scale_x_continuous(breaks = breaks_pretty())+
     theme_minimal() +
     theme(
