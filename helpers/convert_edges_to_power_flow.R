@@ -3,6 +3,8 @@ convert_edges_to_power_flow <- function(edges) {
     return(edges)
   }
   
+  print(edges[1,])
+  
   # Employee -> Employer, weight: 3
   works_for <- edges %>% filter(subtype == "WorksFor") %>% mutate(weight = 3)
   

@@ -7,6 +7,9 @@ source("helpers/plot_temporal.R", local = TRUE)$value
 source("helpers/get_activities_by_year.R", local = TRUE)$value
 
 supernetwork <- readRDS("data/rds/supernetwork.rds")
+# Do not allow full network render for these nodes as the network has 23k+ nodes
+# It will crash the Shiny server if we attempt to visualize
+large_network_list <- readRDS("data/rds/large_network_list.rds")
 
 all_nodes <- as_data_frame(supernetwork, what = "vertices")
 
@@ -47,6 +50,16 @@ function(input, output, session) {
     )
   })
   
+  observeEvent(refNode(), {
+    if(refNode() %in% large_network_list) {
+      updateCheckboxInput("showFullNetwork", label = "Full network too big to visualize", value = FALSE, session = session)
+      disable("showFullNetwork")
+    } else {
+      updateCheckboxInput("showFullNetwork", label = "Show all connected nodes", session = session)
+      enable("showFullNetwork")
+    }
+  })
+  
   # =======================================================
   # =================   REACTIVE VALUES   =================
   # =======================================================
@@ -71,7 +84,7 @@ function(input, output, session) {
   })
   
   distance <- reactive({
-    ifelse(input$showFullNetwork, -1, input$distance)
+    ifelse(input$showFullNetwork && !(refNode() %in% large_network_list), -1, input$distance)
   })
   
   snapshotDate <- reactive({

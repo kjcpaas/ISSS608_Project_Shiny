@@ -14,7 +14,6 @@ source("helpers/Settings.R", local = TRUE)$value
 
 corpGraphUI <- source("ui/corp_structure.R", local = TRUE)$value
 corpGraphServer <- source("server/corp_structure.R", local = TRUE)$value
-
 networkGraphUI <- source("ui/network_graph.R", local = TRUE)$value
 networkGraphServer <- source("server/network_graph.R", local = TRUE)$value
 stylesUI <- source("ui/styles.R", local = TRUE)$value
