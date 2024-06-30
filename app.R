@@ -16,7 +16,6 @@ corpGraphUI <- source("ui/corp_structure.R", local = TRUE)$value
 corpGraphServer <- source("server/corp_structure.R", local = TRUE)$value
 networkGraphUI <- source("ui/network_graph.R", local = TRUE)$value
 networkGraphServer <- source("server/network_graph.R", local = TRUE)$value
-stylesUI <- source("ui/styles.R", local = TRUE)$value
 influenceGraphUI <- source("ui/influence_graph.R", local = TRUE)$value
 influenceGraphServer <- source("server/influence_graph.R", local = TRUE)$value
 
@@ -24,7 +23,9 @@ supernetwork <- readRDS("data/rds/supernetwork.rds")
 
 ui <- tagList(
   useShinyjs(),
-  stylesUI,
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "app.css")
+  ),
   navbarPage(
     title = "The Big Fish",
     fluid = TRUE,
