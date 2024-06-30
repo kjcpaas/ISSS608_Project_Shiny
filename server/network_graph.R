@@ -11,8 +11,6 @@ supernetwork <- readRDS("data/rds/supernetwork.rds")
 # It will crash the Shiny server if we attempt to visualize
 large_network_list <- readRDS("data/rds/large_network_list.rds")
 
-all_nodes <- as_data_frame(supernetwork, what = "vertices")
-
 function(input, output, session) {
   # Enable/disable related inputs when checkboxes are toggled
   observeEvent(input$showFullNetwork, {

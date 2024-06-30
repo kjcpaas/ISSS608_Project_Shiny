@@ -109,11 +109,9 @@ function(input, output, session) {
     n <- as_data_frame(graph(), what = "vertices") %>% filter(included == TRUE)
     n <- n %>% filter(supertype=='Organization')
     rownames(n) <- NULL
-    company_df <- read.csv("./data/company.csv")
-    n <- left_join(n, company_df, by = "name")
     
     if(nrow(n) > 0) {
-      n %>% arrange(name) %>% select(name, alias, ProductServices)
+      n %>% arrange(name) %>% select(name, alias, product_services)
     } else {
       NULL
     }

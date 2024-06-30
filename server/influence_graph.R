@@ -4,6 +4,7 @@ source("helpers/convert_graph_to_power_flow.R", local = TRUE)$value
 source("helpers/plot_centrality.R", local = TRUE)$value
 
 supernetwork <- readRDS("data/rds/supernetwork.rds")
+
 all_nodes <- as_data_frame(supernetwork, what = "vertices")
 # Do not allow full network render for these nodes as the network has 23k+ nodes
 # It will crash the Shiny server if we attempt to visualize
