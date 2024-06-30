@@ -20,7 +20,7 @@ ng_side <- function(ns, subtypes) {
     strong("Distance from Reference"),
     sliderInput(ns("distance"), "",
                 min = 0,
-                max = 10,
+                max = 6,
                 value = 3),
     checkboxInput(
       ns("showFullNetwork"),

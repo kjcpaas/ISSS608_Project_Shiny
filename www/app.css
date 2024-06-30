@@ -49,7 +49,3 @@ h3 {
 .tabbable .plot-instruction {
   margin-bottom: 8px;
 }
-
-.shiny-input-container:has(.shiny-input-checkbox.disabled) span{
-  font-style: italic;
-}
